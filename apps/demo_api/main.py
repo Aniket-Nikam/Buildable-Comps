@@ -1,6 +1,8 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+from buildable_authorization import models as authorization_models  # noqa: F401
+from buildable_authorization.router import router as authorization_router
 from buildable_core.config import Settings, get_settings
 from buildable_core.database import Base, create_engine_and_session_factory
 from buildable_core.errors import register_error_handlers
@@ -10,7 +12,7 @@ from buildable_core.logging import configure_logging
 from buildable_core.middleware import install_middleware
 from buildable_core.rate_limit import create_rate_limiter
 from buildable_identity import models as identity_models  # noqa: F401
-from buildable_identity.notifications import IdentityNotifier, InMemoryIdentityNotifier
+from buildable_identity.notifications import IdentityNotifier, create_identity_notifier
 from buildable_identity.router import router as identity_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,8 +28,8 @@ def create_app(
     identity_notifier: IdentityNotifier | None = None,
 ) -> FastAPI:
     resolved_settings = settings or get_settings()
-    if resolved_settings.app_env == "production" and identity_notifier is None:
-        raise ValueError("Production requires an IdentityNotifier delivery adapter")
+    if identity_notifier is None:
+        identity_notifier = create_identity_notifier(resolved_settings)
     if engine is None or session_factory is None:
         engine, session_factory = create_engine_and_session_factory(resolved_settings.database_url)
 
@@ -59,20 +61,21 @@ def create_app(
     app.state.settings = resolved_settings
     app.state.session_factory = session_factory
     app.state.events = InProcessEventPublisher()
-    app.state.identity_notifier = identity_notifier or InMemoryIdentityNotifier()
+    app.state.identity_notifier = identity_notifier
     app.state.auth_rate_limiter = rate_limiter
     install_middleware(app)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=resolved_settings.cors_origins,
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["authorization", "content-type", "x-request-id"],
         expose_headers=["x-request-id", "x-response-time-ms"],
     )
     register_error_handlers(app)
     app.include_router(health_router)
     app.include_router(identity_router, prefix=resolved_settings.api_prefix)
+    app.include_router(authorization_router, prefix=resolved_settings.api_prefix)
     return app
 
 

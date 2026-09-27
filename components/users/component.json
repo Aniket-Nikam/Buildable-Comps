@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "identity.users",
   "name": "Users and profiles",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "summary": "Framework-neutral user identity and profile behavior with a FastAPI implementation.",
   "category": "identity",
-  "status": "beta",
+  "status": "stable",
   "provides": ["users", "user-profiles"],
   "requires": [],
   "compatibility": {

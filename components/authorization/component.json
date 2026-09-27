@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "id": "identity.authorization",
+  "name": "Role-based authorization",
+  "version": "0.1.0",
+  "summary": "Reusable roles, permissions, guards, assignment workflows, and auditable administration.",
+  "category": "authorization",
+  "status": "beta",
+  "provides": [
+    "roles",
+    "permissions",
+    "role-assignments",
+    "permission-guards",
+    "authorization-audit"
+  ],
+  "requires": ["identity.auth", "identity.users"],
+  "compatibility": {
+    "frontend": ["react>=19"],
+    "backend": ["fastapi>=0.115", "python>=3.12"],
+    "databases": ["postgresql>=16", "sqlite>=3.40"]
+  },
+  "publicApi": {
+    "exports": [
+      "AuthorizationProvider",
+      "AuthorizationService",
+      "Can",
+      "PermissionGuard",
+      "bootstrap_administrator",
+      "require_permission",
+      "useAuthorization"
+    ],
+    "http": [
+      { "method": "GET", "path": "/api/v1/authorization/me" },
+      { "method": "GET", "path": "/api/v1/authorization/roles" },
+      { "method": "POST", "path": "/api/v1/authorization/roles" },
+      { "method": "GET", "path": "/api/v1/authorization/roles/{role_id}" },
+      { "method": "GET", "path": "/api/v1/authorization/permissions" },
+      { "method": "POST", "path": "/api/v1/authorization/permissions" },
+      {
+        "method": "PUT",
+        "path": "/api/v1/authorization/roles/{role_id}/permissions/{permission_id}"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/authorization/roles/{role_id}/permissions/{permission_id}"
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/authorization/users/{user_id}/roles/{role_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/authorization/users/{user_id}"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/authorization/users/{user_id}/roles/{role_id}"
+      },
+      { "method": "GET", "path": "/api/v1/authorization/audit-logs" }
+    ]
+  },
+  "environmentVariables": [],
+  "permissions": [
+    "authorization.roles.read",
+    "authorization.roles.write",
+    "authorization.assignments.write",
+    "authorization.audit.read"
+  ],
+  "events": {
+    "published": [
+      "RoleCreated",
+      "PermissionCreated",
+      "PermissionGranted",
+      "PermissionRevoked",
+      "RoleAssigned",
+      "RoleRevoked"
+    ],
+    "consumed": []
+  },
+  "migrations": ["database/migrations/versions/0003_authorization.py"],
+  "tests": [
+    "tests/python/test_authorization_api.py",
+    "frontend/react/src/authorization/AuthorizationProvider.test.tsx"
+  ],
+  "documentation": "./README.md"
+}

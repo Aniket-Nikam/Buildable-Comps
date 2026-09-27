@@ -1,12 +1,19 @@
 import type {
   ApiEnvelope,
   AcceptedResult,
+  AuthorizationAuditLog,
+  AuthorizationSnapshot,
   AuthData,
   EmailInput,
   LoginInput,
   PasswordResetInput,
   PasswordResetResult,
+  Permission,
+  PermissionInput,
   RegisterInput,
+  Role,
+  RoleDetail,
+  RoleInput,
   TokenInput,
   UpdateProfileInput,
   User,
@@ -118,6 +125,85 @@ export class ApiClient {
       method: "POST",
       body: JSON.stringify(input),
     });
+  }
+
+  authorization(): Promise<AuthorizationSnapshot> {
+    return this.request("/authorization/me", {}, true);
+  }
+
+  listRoles(): Promise<Role[]> {
+    return this.request("/authorization/roles", {}, true);
+  }
+
+  getRole(roleId: string): Promise<RoleDetail> {
+    return this.request(`/authorization/roles/${roleId}`, {}, true);
+  }
+
+  createRole(input: RoleInput): Promise<Role> {
+    return this.request(
+      "/authorization/roles",
+      { method: "POST", body: JSON.stringify(input) },
+      true,
+    );
+  }
+
+  listPermissions(): Promise<Permission[]> {
+    return this.request("/authorization/permissions", {}, true);
+  }
+
+  createPermission(input: PermissionInput): Promise<Permission> {
+    return this.request(
+      "/authorization/permissions",
+      { method: "POST", body: JSON.stringify(input) },
+      true,
+    );
+  }
+
+  async grantPermission(roleId: string, permissionId: string): Promise<void> {
+    await this.request(
+      `/authorization/roles/${roleId}/permissions/${permissionId}`,
+      { method: "PUT" },
+      true,
+    );
+  }
+
+  async revokePermission(roleId: string, permissionId: string): Promise<void> {
+    await this.request(
+      `/authorization/roles/${roleId}/permissions/${permissionId}`,
+      { method: "DELETE" },
+      true,
+    );
+  }
+
+  async assignRole(userId: string, roleId: string): Promise<void> {
+    await this.request(
+      `/authorization/users/${userId}/roles/${roleId}`,
+      { method: "PUT" },
+      true,
+    );
+  }
+
+  getUserAuthorization(userId: string): Promise<AuthorizationSnapshot> {
+    return this.request(`/authorization/users/${userId}`, {}, true);
+  }
+
+  async revokeRole(userId: string, roleId: string): Promise<void> {
+    await this.request(
+      `/authorization/users/${userId}/roles/${roleId}`,
+      { method: "DELETE" },
+      true,
+    );
+  }
+
+  listAuthorizationAuditLogs(
+    limit = 50,
+    offset = 0,
+  ): Promise<AuthorizationAuditLog[]> {
+    return this.request(
+      `/authorization/audit-logs?limit=${limit}&offset=${offset}`,
+      {},
+      true,
+    );
   }
 
   private async request<T>(

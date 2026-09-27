@@ -2,7 +2,7 @@
 
 Buildable Comps is a monorepo for reusable, tested software capabilities that can be discovered and composed by developers and coding agents. It is an internal platform and SDK, not a snippet library.
 
-The initial release proves the architecture with one end-to-end slice: users, hardened password authentication, replay-safe refresh sessions, PostgreSQL persistence, a FastAPI API, and a React interface.
+The current release proves the architecture with users, hardened password authentication, replay-safe refresh sessions, provider-backed recovery delivery, database-backed authorization, PostgreSQL persistence, a FastAPI API, and a React interface.
 
 ## Why it exists
 
@@ -24,13 +24,17 @@ Application teams repeatedly implement the same identity, validation, data acces
 - Single-use email verification and password recovery tokens
 - Immediate access-token invalidation after password reset
 - Redis-backed authentication rate limiting for multi-worker deployments
+- SMTP identity notification adapter with validated production configuration
+- Project-defined roles and exact-match permissions
+- FastAPI permission guards and React permission-aware rendering
+- Audited role, permission, and assignment administration
 - React authenticated state, registration, login, logout, and profile UI
 - Alembic migrations for PostgreSQL and SQLite
-- PostgreSQL-backed authentication integration coverage in CI
+- PostgreSQL-backed authentication and live Redis integration coverage in CI
 - Unit, API, component, tooling, and contract tests
 - Docker Compose development stack and GitHub Actions CI
 
-The identity components remain `beta` while production notification adapters are supplied by each consuming application. OAuth is a separate planned capability, not a requirement of the password-authentication contract.
+The password-authentication and users components are stable at `1.0.0`. Authorization is `beta` while its administration workflow gains broader integration use. OAuth is a separate planned capability, not a requirement of the password-authentication contract.
 
 ## Architecture
 
@@ -41,8 +45,10 @@ apps/
 backend/python/
   buildable_core/       config, errors, events, database, observability, security
   buildable_identity/   user and authentication implementation
+  buildable_authorization/ roles, permissions, guards, assignments, audit
 components/
   auth/                 machine-readable manifest and integration guide
+  authorization/        authorization manifest and integration guide
   users/                machine-readable manifest and integration guide
 database/migrations/    Alembic migration history
 frontend/react/         reusable React auth package
@@ -78,7 +84,7 @@ docker compose up --build
 
 Open the web application at `http://localhost:8080`, the API documentation at `http://localhost:8000/docs`, and the liveness endpoint at `http://localhost:8000/health`.
 
-The Compose credentials are development-only. Replace every secret before deploying.
+The Compose credentials are development-only. Replace every secret before deploying. See the [production deployment runbook](docs/deployment.md) for the strict production Compose overlay and operator checklist.
 
 ## Local development
 
@@ -176,4 +182,4 @@ Read [AGENTS.md](AGENTS.md) before using a coding agent and [CONTRIBUTING.md](CO
 
 ## Roadmap
 
-The next recommended phase is authorization: roles, permissions, policy evaluation, and an auditable administrative surface. Durable notification-provider adapters should follow alongside deployment work. Files, caching, realtime, organizations, and AI adapters remain planned capabilities rather than placeholder implementations.
+Authorization has started with roles, permissions, backend and frontend guards, typed administration APIs, explicit bootstrap, and transactionally written audit history. The next authorization increment is a reusable user-search and role-management UI, followed by policy composition for resource ownership. Files, caching, realtime, organizations, and AI adapters remain planned capabilities rather than placeholder implementations.

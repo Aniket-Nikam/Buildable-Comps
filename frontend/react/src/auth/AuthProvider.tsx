@@ -19,6 +19,7 @@ import { ApiClient } from "../api/client";
 export type AuthStatus = "loading" | "anonymous" | "authenticated";
 
 interface AuthContextValue {
+  client: ApiClient;
   status: AuthStatus;
   user: User | null;
   login: (input: LoginInput) => Promise<void>;
@@ -131,6 +132,7 @@ export function AuthProvider({ apiUrl, children }: AuthProviderProps) {
 
   const value = useMemo(
     () => ({
+      client,
       status,
       user,
       login,
@@ -143,6 +145,7 @@ export function AuthProvider({ apiUrl, children }: AuthProviderProps) {
       updateProfile,
     }),
     [
+      client,
       status,
       user,
       login,
@@ -163,4 +166,8 @@ export function useAuth(): AuthContextValue {
   const value = useContext(AuthContext);
   if (!value) throw new Error("useAuth must be used within AuthProvider");
   return value;
+}
+
+export function useApiClient(): ApiClient {
+  return useAuth().client;
 }

@@ -5,10 +5,10 @@
       "schemaVersion": 1,
       "id": "identity.auth",
       "name": "Session authentication",
-      "version": "0.2.0",
+      "version": "1.0.0",
       "summary": "Hardened password authentication with verification, recovery, and replay-safe rotating sessions.",
       "category": "authentication",
-      "status": "beta",
+      "status": "stable",
       "provides": [
         "registration",
         "login",
@@ -32,7 +32,9 @@
           "ProtectedRoute",
           "RecoveryPanel",
           "AuthenticationService",
-          "IdentityNotifier"
+          "IdentityNotifier",
+          "SmtpIdentityNotifier",
+          "get_current_user"
         ],
         "http": [
           { "method": "POST", "path": "/api/v1/auth/register" },
@@ -99,6 +101,54 @@
           "required": true,
           "secret": true,
           "description": "Redis connection URL used by the shared authentication limiter."
+        },
+        {
+          "name": "IDENTITY_NOTIFIER_BACKEND",
+          "required": true,
+          "secret": false,
+          "description": "Selects memory, SMTP, or an application-injected notification adapter."
+        },
+        {
+          "name": "PUBLIC_WEB_URL",
+          "required": true,
+          "secret": false,
+          "description": "Public application origin used to construct verification and reset links."
+        },
+        {
+          "name": "SMTP_HOST",
+          "required": false,
+          "secret": false,
+          "description": "SMTP provider hostname required when SMTP delivery is selected."
+        },
+        {
+          "name": "SMTP_PORT",
+          "required": false,
+          "secret": false,
+          "description": "SMTP provider port."
+        },
+        {
+          "name": "SMTP_USERNAME",
+          "required": false,
+          "secret": true,
+          "description": "SMTP username configured together with the password."
+        },
+        {
+          "name": "SMTP_PASSWORD",
+          "required": false,
+          "secret": true,
+          "description": "SMTP credential required when authenticated SMTP is selected."
+        },
+        {
+          "name": "SMTP_FROM_EMAIL",
+          "required": false,
+          "secret": false,
+          "description": "Sender address required when SMTP delivery is selected."
+        },
+        {
+          "name": "SMTP_SECURITY",
+          "required": false,
+          "secret": false,
+          "description": "Selects STARTTLS, implicit TLS, or transport security delegated to the network."
         }
       ],
       "permissions": [],
@@ -121,6 +171,8 @@
         "tests/python/test_auth_api.py",
         "tests/python/test_identity_hardening.py",
         "tests/python/test_postgres_integration.py",
+        "tests/python/test_redis_integration.py",
+        "tests/python/test_notifications.py",
         "frontend/react/src/auth/AuthProvider.test.tsx"
       ],
       "documentation": "./README.md",
@@ -128,12 +180,96 @@
     },
     {
       "schemaVersion": 1,
+      "id": "identity.authorization",
+      "name": "Role-based authorization",
+      "version": "0.1.0",
+      "summary": "Reusable roles, permissions, guards, assignment workflows, and auditable administration.",
+      "category": "authorization",
+      "status": "beta",
+      "provides": [
+        "roles",
+        "permissions",
+        "role-assignments",
+        "permission-guards",
+        "authorization-audit"
+      ],
+      "requires": ["identity.auth", "identity.users"],
+      "compatibility": {
+        "frontend": ["react>=19"],
+        "backend": ["fastapi>=0.115", "python>=3.12"],
+        "databases": ["postgresql>=16", "sqlite>=3.40"]
+      },
+      "publicApi": {
+        "exports": [
+          "AuthorizationProvider",
+          "AuthorizationService",
+          "Can",
+          "PermissionGuard",
+          "bootstrap_administrator",
+          "require_permission",
+          "useAuthorization"
+        ],
+        "http": [
+          { "method": "GET", "path": "/api/v1/authorization/me" },
+          { "method": "GET", "path": "/api/v1/authorization/roles" },
+          { "method": "POST", "path": "/api/v1/authorization/roles" },
+          { "method": "GET", "path": "/api/v1/authorization/roles/{role_id}" },
+          { "method": "GET", "path": "/api/v1/authorization/permissions" },
+          { "method": "POST", "path": "/api/v1/authorization/permissions" },
+          {
+            "method": "PUT",
+            "path": "/api/v1/authorization/roles/{role_id}/permissions/{permission_id}"
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/v1/authorization/roles/{role_id}/permissions/{permission_id}"
+          },
+          {
+            "method": "PUT",
+            "path": "/api/v1/authorization/users/{user_id}/roles/{role_id}"
+          },
+          { "method": "GET", "path": "/api/v1/authorization/users/{user_id}" },
+          {
+            "method": "DELETE",
+            "path": "/api/v1/authorization/users/{user_id}/roles/{role_id}"
+          },
+          { "method": "GET", "path": "/api/v1/authorization/audit-logs" }
+        ]
+      },
+      "environmentVariables": [],
+      "permissions": [
+        "authorization.roles.read",
+        "authorization.roles.write",
+        "authorization.assignments.write",
+        "authorization.audit.read"
+      ],
+      "events": {
+        "published": [
+          "RoleCreated",
+          "PermissionCreated",
+          "PermissionGranted",
+          "PermissionRevoked",
+          "RoleAssigned",
+          "RoleRevoked"
+        ],
+        "consumed": []
+      },
+      "migrations": ["database/migrations/versions/0003_authorization.py"],
+      "tests": [
+        "tests/python/test_authorization_api.py",
+        "frontend/react/src/authorization/AuthorizationProvider.test.tsx"
+      ],
+      "documentation": "./README.md",
+      "manifestPath": "components/authorization/component.json"
+    },
+    {
+      "schemaVersion": 1,
       "id": "identity.users",
       "name": "Users and profiles",
-      "version": "0.2.0",
+      "version": "1.0.0",
       "summary": "Framework-neutral user identity and profile behavior with a FastAPI implementation.",
       "category": "identity",
-      "status": "beta",
+      "status": "stable",
       "provides": ["users", "user-profiles"],
       "requires": [],
       "compatibility": {

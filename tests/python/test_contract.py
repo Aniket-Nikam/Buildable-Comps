@@ -13,5 +13,13 @@ def test_openapi_exposes_registered_identity_contract(client: TestClient) -> Non
         "/api/v1/auth/password/forgot",
         "/api/v1/auth/password/reset",
         "/api/v1/users/me",
+        "/api/v1/authorization/me",
+        "/api/v1/authorization/roles",
+        "/api/v1/authorization/roles/{role_id}",
+        "/api/v1/authorization/permissions",
+        "/api/v1/authorization/roles/{role_id}/permissions/{permission_id}",
+        "/api/v1/authorization/users/{user_id}/roles/{role_id}",
+        "/api/v1/authorization/users/{user_id}",
+        "/api/v1/authorization/audit-logs",
     }
     assert expected <= set(paths)

@@ -34,10 +34,13 @@ dev = [
 where = ["backend/python"]
 
 [tool.pytest.ini_options]
-addopts = "-q --strict-markers --disable-warnings -p no:cacheprovider --cov=buildable_core --cov=buildable_identity --cov-report=term-missing"
+addopts = "-q --strict-markers --disable-warnings -p no:cacheprovider --cov=buildable_core --cov=buildable_identity --cov=buildable_authorization --cov-report=term-missing"
 testpaths = ["tests/python"]
 pythonpath = ["."]
-markers = ["postgres: requires TEST_POSTGRES_URL and a migrated PostgreSQL database"]
+markers = [
+  "postgres: requires TEST_POSTGRES_URL and a migrated PostgreSQL database",
+  "redis: requires TEST_REDIS_URL and a live Redis service",
+]
 
 [tool.ruff]
 line-length = 100

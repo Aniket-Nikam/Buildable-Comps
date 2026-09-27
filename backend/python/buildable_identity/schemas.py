@@ -1,14 +1,7 @@
 from datetime import datetime
-from typing import Any
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
-from pydantic.alias_generators import to_camel
-
-
-class ApiModel(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel, populate_by_name=True, from_attributes=True, extra="forbid"
-    )
+from buildable_core.schemas import ApiModel, SuccessEnvelope
+from pydantic import EmailStr, Field
 
 
 class RegisterRequest(ApiModel):
@@ -55,7 +48,14 @@ class AuthData(ApiModel):
     user: UserPublic
 
 
-class SuccessEnvelope(ApiModel):
-    success: bool = True
-    data: Any
-    meta: dict[str, Any] = Field(default_factory=dict)
+__all__ = [
+    "AuthData",
+    "EmailRequest",
+    "LoginRequest",
+    "PasswordResetRequest",
+    "RegisterRequest",
+    "SuccessEnvelope",
+    "TokenRequest",
+    "UpdateProfileRequest",
+    "UserPublic",
+]

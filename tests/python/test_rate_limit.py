@@ -58,6 +58,9 @@ def test_production_rejects_local_only_security_adapters() -> None:
             app_env="production",
             secret_key="production-secret-with-at-least-thirty-two-characters",
             cookie_secure=True,
+            database_url="postgresql+psycopg://user:password@localhost/database",
+            public_web_url="https://app.example.com",
+            cors_origins=["https://app.example.com"],
         )
 
     settings = Settings(
@@ -67,6 +70,10 @@ def test_production_rejects_local_only_security_adapters() -> None:
         rate_limit_backend="redis",
         redis_url="redis://localhost:6379/0",
         require_verified_email=True,
+        identity_notifier_backend="injected",
+        database_url="postgresql+psycopg://user:password@localhost/database",
+        public_web_url="https://app.example.com",
+        cors_origins=["https://app.example.com"],
     )
     with pytest.raises(ValueError, match="IdentityNotifier"):
         create_app(settings)

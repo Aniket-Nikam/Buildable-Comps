@@ -39,10 +39,20 @@ jobs:
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
       APP_ENV: test
       DATABASE_URL: postgresql+psycopg://buildable:buildable@localhost:5432/buildable_test
       TEST_POSTGRES_URL: postgresql+psycopg://buildable:buildable@localhost:5432/buildable_test
+      TEST_REDIS_URL: redis://localhost:6379/15
       SECRET_KEY: ci-secret-with-at-least-thirty-two-characters
     steps:
       - uses: actions/checkout@v4

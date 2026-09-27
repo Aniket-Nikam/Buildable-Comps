@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "identity.auth",
   "name": "Session authentication",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "summary": "Hardened password authentication with verification, recovery, and replay-safe rotating sessions.",
   "category": "authentication",
-  "status": "beta",
+  "status": "stable",
   "provides": [
     "registration",
     "login",
@@ -29,7 +29,9 @@
       "ProtectedRoute",
       "RecoveryPanel",
       "AuthenticationService",
-      "IdentityNotifier"
+      "IdentityNotifier",
+      "SmtpIdentityNotifier",
+      "get_current_user"
     ],
     "http": [
       { "method": "POST", "path": "/api/v1/auth/register" },
@@ -90,6 +92,54 @@
       "required": true,
       "secret": true,
       "description": "Redis connection URL used by the shared authentication limiter."
+    },
+    {
+      "name": "IDENTITY_NOTIFIER_BACKEND",
+      "required": true,
+      "secret": false,
+      "description": "Selects memory, SMTP, or an application-injected notification adapter."
+    },
+    {
+      "name": "PUBLIC_WEB_URL",
+      "required": true,
+      "secret": false,
+      "description": "Public application origin used to construct verification and reset links."
+    },
+    {
+      "name": "SMTP_HOST",
+      "required": false,
+      "secret": false,
+      "description": "SMTP provider hostname required when SMTP delivery is selected."
+    },
+    {
+      "name": "SMTP_PORT",
+      "required": false,
+      "secret": false,
+      "description": "SMTP provider port."
+    },
+    {
+      "name": "SMTP_USERNAME",
+      "required": false,
+      "secret": true,
+      "description": "SMTP username configured together with the password."
+    },
+    {
+      "name": "SMTP_PASSWORD",
+      "required": false,
+      "secret": true,
+      "description": "SMTP credential required when authenticated SMTP is selected."
+    },
+    {
+      "name": "SMTP_FROM_EMAIL",
+      "required": false,
+      "secret": false,
+      "description": "Sender address required when SMTP delivery is selected."
+    },
+    {
+      "name": "SMTP_SECURITY",
+      "required": false,
+      "secret": false,
+      "description": "Selects STARTTLS, implicit TLS, or transport security delegated to the network."
     }
   ],
   "permissions": [],
@@ -112,6 +162,8 @@
     "tests/python/test_auth_api.py",
     "tests/python/test_identity_hardening.py",
     "tests/python/test_postgres_integration.py",
+    "tests/python/test_redis_integration.py",
+    "tests/python/test_notifications.py",
     "frontend/react/src/auth/AuthProvider.test.tsx"
   ],
   "documentation": "./README.md"

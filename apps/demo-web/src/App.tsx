@@ -1,10 +1,18 @@
 import {
+  AuthorizationProvider,
   AuthPanel,
   AuthProvider,
+  Can,
   ProfilePanel,
   ProtectedRoute,
+  useAuthorization,
 } from "@buildable/react";
-import { BracketsCurly, Cube, GithubLogo } from "@phosphor-icons/react";
+import {
+  BracketsCurly,
+  Cube,
+  GithubLogo,
+  ShieldCheck,
+} from "@phosphor-icons/react";
 
 const configuredApiUrl: unknown = import.meta.env.VITE_API_URL;
 const apiUrl =
@@ -15,34 +23,36 @@ const apiUrl =
 export function App() {
   return (
     <AuthProvider apiUrl={apiUrl}>
-      <div className="app-shell">
-        <header className="site-header">
-          <a className="brand" href="/" aria-label="Buildable Comps home">
-            <span className="brand-mark" aria-hidden>
-              <Cube size={20} weight="fill" />
-            </span>
-            <span>Buildable Comps</span>
-          </a>
-          <nav aria-label="Primary navigation">
-            <a href="http://localhost:8000/docs">API docs</a>
-            <a href="https://github.com/Aniket-Nikam/Buildable-Comps">
-              <GithubLogo aria-hidden size={18} />
-              Repository
+      <AuthorizationProvider>
+        <div className="app-shell">
+          <header className="site-header">
+            <a className="brand" href="/" aria-label="Buildable Comps home">
+              <span className="brand-mark" aria-hidden>
+                <Cube size={20} weight="fill" />
+              </span>
+              <span>Buildable Comps</span>
             </a>
-          </nav>
-        </header>
+            <nav aria-label="Primary navigation">
+              <a href="http://localhost:8000/docs">API docs</a>
+              <a href="https://github.com/Aniket-Nikam/Buildable-Comps">
+                <GithubLogo aria-hidden size={18} />
+                Repository
+              </a>
+            </nav>
+          </header>
 
-        <main>
-          <ProtectedRoute fallback={<UnauthenticatedView />}>
-            <AuthenticatedView />
-          </ProtectedRoute>
-        </main>
+          <main>
+            <ProtectedRoute fallback={<UnauthenticatedView />}>
+              <AuthenticatedView />
+            </ProtectedRoute>
+          </main>
 
-        <footer>
-          <span>Built from registered modules, not copied snippets.</span>
-          <a href="http://localhost:8000/health">Health endpoint</a>
-        </footer>
-      </div>
+          <footer>
+            <span>Built from registered modules, not copied snippets.</span>
+            <a href="http://localhost:8000/health">Health endpoint</a>
+          </footer>
+        </div>
+      </AuthorizationProvider>
     </AuthProvider>
   );
 }
@@ -80,6 +90,37 @@ function AuthenticatedView() {
         <h2>Your reusable identity module is running.</h2>
       </div>
       <ProfilePanel />
+      <AccessSummary />
     </div>
+  );
+}
+
+function AccessSummary() {
+  const { status, roles, permissions } = useAuthorization();
+  const roleNames = roles.map((role) => role.name).join(", ");
+
+  return (
+    <section className="access-summary" aria-labelledby="access-summary-title">
+      <div className="access-summary-icon" aria-hidden>
+        <ShieldCheck size={24} weight="fill" />
+      </div>
+      <div>
+        <p>Effective access</p>
+        <h3 id="access-summary-title">
+          {status === "loading"
+            ? "Loading authorization…"
+            : roleNames || "No roles assigned"}
+        </h3>
+        <span>
+          {permissions.length} effective permission
+          {permissions.length === 1 ? "" : "s"}
+        </span>
+      </div>
+      <Can permission="authorization.roles.read">
+        <span className="access-summary-badge">
+          Role administration enabled
+        </span>
+      </Can>
+    </section>
   );
 }

@@ -21,9 +21,11 @@ component manifest -> generated registry -> developer or coding agent
 - Database migrations are reviewed public integration requirements.
 - Example apps consume shared modules and prove integration without duplicating them.
 
-## First vertical slice
+## Reusable vertical slices
 
 The React client calls a standardized FastAPI contract. The API delegates authentication behavior to `AuthenticationService`, which coordinates repositories, password hashing, token creation, refresh-session rotation, and events. SQLAlchemy supports PostgreSQL in deployment and SQLite in isolated tests.
+
+Authorization remains a separate component over the public Identity boundary. `AuthorizationService` coordinates roles, permissions, assignments, and audit records. FastAPI dependencies and React providers adapt that service into backend and frontend guards without coupling authentication to application-specific roles.
 
 The in-process event publisher is intentionally small. A transactional outbox can replace it without moving domain behavior into a message broker.
 
@@ -40,3 +42,4 @@ Related documents:
 - [Security architecture](security.md)
 - [Testing strategy](testing.md)
 - [Component lifecycle](component-lifecycle.md)
+- [Production deployment](../deployment.md)

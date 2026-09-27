@@ -2,6 +2,7 @@ import os
 import uuid
 
 import pytest
+from buildable_authorization import bootstrap_administrator
 from buildable_core.config import Settings
 from buildable_core.database import create_engine_and_session_factory
 from buildable_identity.models import User
@@ -41,6 +42,15 @@ def test_auth_lifecycle_against_migrated_postgres() -> None:
             )
             assert registered.status_code == 201
             assert client.post("/api/v1/auth/refresh").status_code == 200
+            registration_data = registered.json()["data"]
+            with session_factory() as session:
+                bootstrap_administrator(session, registration_data["user"]["id"])
+            authorization = client.get(
+                "/api/v1/authorization/me",
+                headers={"Authorization": f"Bearer {registration_data['accessToken']}"},
+            )
+            assert authorization.status_code == 200
+            assert authorization.json()["data"]["roles"][0]["name"] == "platform-admin"
     finally:
         with session_factory() as session:
             session.execute(delete(User).where(User.email == email))

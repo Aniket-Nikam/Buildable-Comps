@@ -70,3 +70,50 @@ export interface AcceptedResult {
 export interface PasswordResetResult {
   passwordReset: true;
 }
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  isSystem: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Permission {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+}
+
+export interface RoleDetail extends Role {
+  permissions: Permission[];
+}
+
+export interface AuthorizationSnapshot {
+  roles: Role[];
+  permissions: Permission[];
+}
+
+export interface RoleInput {
+  name: string;
+  description?: string;
+}
+
+export interface PermissionInput {
+  name: string;
+  description?: string;
+}
+
+export interface AuthorizationAuditLog {
+  id: string;
+  actorUserId: string | null;
+  action: string;
+  targetType: string;
+  targetId: string;
+  details: Record<string, unknown>;
+  requestId: string | null;
+  ipAddress: string | null;
+  createdAt: string;
+}

@@ -147,6 +147,62 @@
   letter-spacing: -0.045em;
 }
 
+.access-summary {
+  display: grid;
+  width: min(100%, 64rem);
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--bc-line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bc-surface) 80%, transparent);
+}
+
+.access-summary-icon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--bc-surface-subtle);
+  color: var(--bc-accent);
+}
+
+.access-summary p,
+.access-summary h3 {
+  margin: 0;
+}
+
+.access-summary p {
+  color: var(--bc-accent);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.access-summary h3 {
+  margin-top: 0.25rem;
+  font-size: 1rem;
+}
+
+.access-summary div > span {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--bc-text-muted);
+  font-size: 0.8rem;
+}
+
+.access-summary-badge {
+  padding: 0.45rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bc-accent) 10%, var(--bc-surface));
+  color: var(--bc-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .app-shell footer {
   display: flex;
   min-height: 4.5rem;
@@ -175,6 +231,15 @@
   .auth-layout {
     grid-template-columns: 1fr;
     gap: 2.5rem;
+  }
+
+  .access-summary {
+    grid-template-columns: auto 1fr;
+  }
+
+  .access-summary-badge {
+    grid-column: 1 / -1;
+    width: fit-content;
   }
 
   .intro h1 {
