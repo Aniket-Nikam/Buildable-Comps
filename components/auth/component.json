@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "id": "identity.auth",
+  "name": "Session authentication",
+  "version": "0.2.0",
+  "summary": "Hardened password authentication with verification, recovery, and replay-safe rotating sessions.",
+  "category": "authentication",
+  "status": "beta",
+  "provides": [
+    "registration",
+    "login",
+    "logout",
+    "token-refresh",
+    "protected-routes",
+    "email-verification",
+    "password-recovery",
+    "refresh-reuse-detection",
+    "distributed-rate-limiting"
+  ],
+  "requires": ["identity.users"],
+  "compatibility": {
+    "frontend": ["react>=19"],
+    "backend": ["fastapi>=0.115", "python>=3.12"],
+    "databases": ["postgresql>=16", "sqlite>=3.40"]
+  },
+  "publicApi": {
+    "exports": [
+      "AuthProvider",
+      "ProtectedRoute",
+      "RecoveryPanel",
+      "AuthenticationService",
+      "IdentityNotifier"
+    ],
+    "http": [
+      { "method": "POST", "path": "/api/v1/auth/register" },
+      { "method": "POST", "path": "/api/v1/auth/login" },
+      { "method": "POST", "path": "/api/v1/auth/refresh" },
+      { "method": "POST", "path": "/api/v1/auth/logout" },
+      { "method": "POST", "path": "/api/v1/auth/email-verification/request" },
+      { "method": "POST", "path": "/api/v1/auth/email-verification/confirm" },
+      { "method": "POST", "path": "/api/v1/auth/password/forgot" },
+      { "method": "POST", "path": "/api/v1/auth/password/reset" }
+    ]
+  },
+  "environmentVariables": [
+    {
+      "name": "SECRET_KEY",
+      "required": true,
+      "secret": true,
+      "description": "Signs access and refresh tokens."
+    },
+    {
+      "name": "ACCESS_TOKEN_TTL_MINUTES",
+      "required": false,
+      "secret": false,
+      "description": "Access token lifetime in minutes."
+    },
+    {
+      "name": "REFRESH_TOKEN_TTL_DAYS",
+      "required": false,
+      "secret": false,
+      "description": "Refresh session lifetime in days."
+    },
+    {
+      "name": "REQUIRE_VERIFIED_EMAIL",
+      "required": false,
+      "secret": false,
+      "description": "Gates sign-in and protected requests on verification; required in production."
+    },
+    {
+      "name": "EMAIL_VERIFICATION_TTL_HOURS",
+      "required": false,
+      "secret": false,
+      "description": "Lifetime of a single-use verification token."
+    },
+    {
+      "name": "PASSWORD_RESET_TTL_HOURS",
+      "required": false,
+      "secret": false,
+      "description": "Lifetime of a single-use password reset token."
+    },
+    {
+      "name": "RATE_LIMIT_BACKEND",
+      "required": true,
+      "secret": false,
+      "description": "Selects memory or Redis rate-limit storage; production requires Redis."
+    },
+    {
+      "name": "REDIS_URL",
+      "required": true,
+      "secret": true,
+      "description": "Redis connection URL used by the shared authentication limiter."
+    }
+  ],
+  "permissions": [],
+  "events": {
+    "published": [
+      "UserRegistered",
+      "SessionStarted",
+      "SessionRevoked",
+      "EmailVerified",
+      "PasswordReset",
+      "RefreshTokenReuseDetected"
+    ],
+    "consumed": []
+  },
+  "migrations": [
+    "database/migrations/versions/0001_identity.py",
+    "database/migrations/versions/0002_identity_hardening.py"
+  ],
+  "tests": [
+    "tests/python/test_auth_api.py",
+    "tests/python/test_identity_hardening.py",
+    "tests/python/test_postgres_integration.py",
+    "frontend/react/src/auth/AuthProvider.test.tsx"
+  ],
+  "documentation": "./README.md"
+}

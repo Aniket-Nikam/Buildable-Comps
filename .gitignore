@@ -1,0 +1,30 @@
+# JavaScript
+node_modules/
+dist/
+coverage/
+.vite/
+*.tsbuildinfo
+.tmp-pip/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+pytest-cache-files-*/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Environment and local data
+.env
+*.db
+*.sqlite3
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

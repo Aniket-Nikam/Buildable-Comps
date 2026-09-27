@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "buildable-comps-python"
+version = "0.1.0"
+description = "Reusable FastAPI foundations and identity components for Buildable Comps"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic>=1.14,<2",
+  "email-validator>=2.2,<3",
+  "fastapi>=0.115,<1",
+  "pwdlib[argon2]>=0.2,<1",
+  "pydantic-settings>=2.7,<3",
+  "PyJWT>=2.10,<3",
+  "psycopg[binary]>=3.2,<4",
+  "redis>=6,<7",
+  "SQLAlchemy>=2.0,<3",
+  "uvicorn[standard]>=0.34,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx2>=2.13,<3",
+  "mypy>=1.14,<2",
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<8",
+  "ruff>=0.9,<1",
+]
+
+[tool.setuptools.packages.find]
+where = ["backend/python"]
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers --disable-warnings -p no:cacheprovider --cov=buildable_core --cov=buildable_identity --cov-report=term-missing"
+testpaths = ["tests/python"]
+pythonpath = ["."]
+markers = ["postgres: requires TEST_POSTGRES_URL and a migrated PostgreSQL database"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["backend/python", "apps/demo_api"]

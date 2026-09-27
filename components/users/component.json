@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "identity.users",
+  "name": "Users and profiles",
+  "version": "0.2.0",
+  "summary": "Framework-neutral user identity and profile behavior with a FastAPI implementation.",
+  "category": "identity",
+  "status": "beta",
+  "provides": ["users", "user-profiles"],
+  "requires": [],
+  "compatibility": {
+    "frontend": ["react>=19"],
+    "backend": ["fastapi>=0.115", "python>=3.12"],
+    "databases": ["postgresql>=16", "sqlite>=3.40"]
+  },
+  "publicApi": {
+    "exports": ["User", "UserPublic", "UserRepository"],
+    "http": [
+      { "method": "GET", "path": "/api/v1/users/me" },
+      { "method": "PATCH", "path": "/api/v1/users/me" }
+    ]
+  },
+  "environmentVariables": [],
+  "permissions": ["users.self.read", "users.self.update"],
+  "events": {
+    "published": ["UserRegistered", "UserUpdated"],
+    "consumed": []
+  },
+  "migrations": [
+    "database/migrations/versions/0001_identity.py",
+    "database/migrations/versions/0002_identity_hardening.py"
+  ],
+  "tests": [
+    "tests/python/test_auth_api.py",
+    "tests/python/test_postgres_integration.py"
+  ],
+  "documentation": "./README.md"
+}

@@ -1,0 +1,439 @@
+:root {
+  color-scheme: light dark;
+  --bc-canvas: #f4f7f6;
+  --bc-surface: #fbfdfc;
+  --bc-surface-raised: #ffffff;
+  --bc-surface-subtle: #e8eeec;
+  --bc-text: #18201e;
+  --bc-text-muted: #5d6a66;
+  --bc-line: #cfd9d5;
+  --bc-line-strong: #a7b7b1;
+  --bc-accent: #167052;
+  --bc-accent-hover: #105b42;
+  --bc-accent-contrast: #f7fffb;
+  --bc-danger: #a43d3d;
+  --bc-danger-surface: #fff0f0;
+  --bc-shadow: 0 24px 60px rgba(24, 60, 48, 0.1);
+  font-family: "Aptos", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bc-canvas: #101513;
+    --bc-surface: #151c19;
+    --bc-surface-raised: #1a231f;
+    --bc-surface-subtle: #222e29;
+    --bc-text: #edf5f1;
+    --bc-text-muted: #aab9b3;
+    --bc-line: #32413b;
+    --bc-line-strong: #4d6059;
+    --bc-accent: #62c89f;
+    --bc-accent-hover: #7ad8b2;
+    --bc-accent-contrast: #102019;
+    --bc-danger: #ff9a9a;
+    --bc-danger-surface: #382020;
+    --bc-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bc-canvas);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      color-mix(in srgb, var(--bc-accent) 9%, transparent),
+      transparent 28rem
+    ),
+    var(--bc-canvas);
+  color: var(--bc-text);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.bc-link-button {
+  width: fit-content;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--bc-accent);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.bc-link-button-centered {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  gap: 0.35rem;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--bc-accent) 42%, transparent);
+  outline-offset: 2px;
+}
+
+.bc-auth-panel,
+.bc-profile {
+  width: 100%;
+  border: 1px solid var(--bc-line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bc-surface-raised) 94%, transparent);
+  box-shadow: var(--bc-shadow);
+}
+
+.bc-auth-panel {
+  max-width: 31rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.bc-recovery-panel {
+  margin-inline: auto;
+}
+
+.bc-segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 12px;
+  background: var(--bc-surface-subtle);
+}
+
+.bc-segmented button {
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--bc-text-muted);
+  cursor: pointer;
+}
+
+.bc-segmented button[aria-pressed="true"] {
+  background: var(--bc-surface-raised);
+  color: var(--bc-text);
+  box-shadow: 0 1px 5px color-mix(in srgb, var(--bc-text) 12%, transparent);
+}
+
+.bc-auth-heading,
+.bc-section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.bc-auth-heading {
+  margin: 2rem 0 1.75rem;
+}
+
+.bc-auth-heading > svg,
+.bc-section-heading > svg {
+  flex: none;
+  color: var(--bc-accent);
+}
+
+.bc-auth-heading h1,
+.bc-profile-header h1,
+.bc-section-heading h2,
+.bc-session-facts h2 {
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+.bc-auth-heading h1 {
+  font-size: clamp(1.65rem, 5vw, 2.1rem);
+  line-height: 1.05;
+}
+
+.bc-auth-heading p,
+.bc-section-heading p {
+  margin: 0.5rem 0 0;
+  color: var(--bc-text-muted);
+  line-height: 1.55;
+}
+
+.bc-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.bc-form label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--bc-text);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.bc-form input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--bc-line-strong);
+  border-radius: 10px;
+  background: var(--bc-surface);
+  color: var(--bc-text);
+}
+
+.bc-form input:hover {
+  border-color: var(--bc-accent);
+}
+
+.bc-field-help {
+  color: var(--bc-text-muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.bc-form-error {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--bc-danger) 45%, transparent);
+  border-radius: 10px;
+  background: var(--bc-danger-surface);
+  color: var(--bc-danger);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.bc-form-notice {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--bc-accent) 40%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bc-accent) 9%, var(--bc-surface));
+  color: var(--bc-text);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.bc-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease;
+}
+
+.bc-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.bc-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.bc-button-primary {
+  border: 1px solid var(--bc-accent);
+  background: var(--bc-accent);
+  color: var(--bc-accent-contrast);
+}
+
+.bc-button-primary:hover:not(:disabled) {
+  border-color: var(--bc-accent-hover);
+  background: var(--bc-accent-hover);
+}
+
+.bc-button-secondary {
+  border: 1px solid var(--bc-line-strong);
+  background: transparent;
+  color: var(--bc-text);
+}
+
+.bc-button-secondary:hover:not(:disabled) {
+  border-color: var(--bc-accent);
+  color: var(--bc-accent);
+}
+
+.bc-skeleton {
+  display: grid;
+  width: 100%;
+  max-width: 31rem;
+  gap: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--bc-line);
+  border-radius: 20px;
+  background: var(--bc-surface-raised);
+}
+
+.bc-skeleton span {
+  height: 3rem;
+  border-radius: 10px;
+  background: var(--bc-surface-subtle);
+}
+
+.bc-skeleton span:first-child {
+  width: 56%;
+  height: 2rem;
+}
+
+.bc-profile {
+  max-width: 64rem;
+  overflow: hidden;
+}
+
+.bc-profile-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border-bottom: 1px solid var(--bc-line);
+}
+
+.bc-profile-header p {
+  margin: 0 0 0.35rem;
+  color: var(--bc-accent);
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bc-profile-header h1 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.bc-profile-header span {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--bc-text-muted);
+}
+
+.bc-avatar {
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--bc-accent);
+  color: var(--bc-accent-contrast);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.bc-verified {
+  color: var(--bc-accent);
+}
+
+.bc-profile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.65fr);
+}
+
+.bc-profile-grid > * {
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.bc-profile-grid > form {
+  border-right: 1px solid var(--bc-line);
+}
+
+.bc-section-heading {
+  margin-bottom: 1rem;
+}
+
+.bc-section-heading h2,
+.bc-session-facts h2 {
+  font-size: 1.05rem;
+}
+
+.bc-section-heading p {
+  font-size: 0.85rem;
+}
+
+.bc-session-facts {
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--bc-surface-subtle) 45%, transparent);
+}
+
+.bc-session-facts dl {
+  display: grid;
+  gap: 1.15rem;
+  margin: 1.4rem 0 2rem;
+}
+
+.bc-session-facts dl div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.bc-session-facts dt {
+  color: var(--bc-text-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bc-session-facts dd {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.bc-session-facts .bc-button {
+  margin-top: 0.75rem;
+}
+
+.bc-session-facts .bc-button:last-child {
+  margin-top: auto;
+}
+
+@media (max-width: 767px) {
+  .bc-auth-panel,
+  .bc-profile {
+    border-radius: 16px;
+  }
+
+  .bc-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bc-profile-grid > form {
+    border-right: 0;
+    border-bottom: 1px solid var(--bc-line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

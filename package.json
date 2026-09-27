@@ -1,0 +1,38 @@
+{
+  "name": "buildable-comps",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A reusable, AI-discoverable software component ecosystem.",
+  "workspaces": [
+    "apps/demo-web",
+    "frontend/react",
+    "packages/contracts"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present && npm run test:tooling",
+    "test:tooling": "node --test scripts/*.test.mjs",
+    "registry:build": "node scripts/build-registry.mjs",
+    "registry:validate": "node scripts/validate-manifests.mjs && node scripts/validate-dependency-graph.mjs",
+    "check": "npm run registry:build && npm run registry:validate && npm run format:check && npm run lint && npm run typecheck && npm test && npm run build",
+    "dev:web": "npm run dev --workspace @buildable/demo-web",
+    "dev:api": "python -m uvicorn apps.demo_api.main:app --reload --port 8000"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "ajv": "^8.17.1",
+    "eslint": "^9.36.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.4.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

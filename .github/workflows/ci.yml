@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master, main]
+
+jobs:
+  javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run registry:build
+      - run: npm run registry:validate
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  python:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: buildable_test
+          POSTGRES_USER: buildable
+          POSTGRES_PASSWORD: buildable
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U buildable -d buildable_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      APP_ENV: test
+      DATABASE_URL: postgresql+psycopg://buildable:buildable@localhost:5432/buildable_test
+      TEST_POSTGRES_URL: postgresql+psycopg://buildable:buildable@localhost:5432/buildable_test
+      SECRET_KEY: ci-secret-with-at-least-thirty-two-characters
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: ruff check backend/python apps/demo_api tests/python
+      - run: ruff format --check backend/python apps/demo_api tests/python
+      - run: mypy
+      - run: alembic upgrade head
+      - run: alembic downgrade base
+      - run: alembic upgrade head
+      - run: pytest

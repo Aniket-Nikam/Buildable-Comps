@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://buildable-comps.dev/schemas/component.schema.json",
+  "title": "Buildable Comps component manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "version",
+    "summary",
+    "category",
+    "status",
+    "provides",
+    "requires",
+    "compatibility",
+    "publicApi",
+    "environmentVariables",
+    "permissions",
+    "events",
+    "migrations",
+    "tests",
+    "documentation"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9-]*)+$"
+    },
+    "name": { "type": "string", "minLength": 3 },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+    },
+    "summary": { "type": "string", "minLength": 10, "maxLength": 240 },
+    "category": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "status": { "enum": ["experimental", "beta", "stable", "deprecated"] },
+    "provides": { "$ref": "#/$defs/stringSet" },
+    "requires": { "$ref": "#/$defs/stringSet" },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frontend", "backend", "databases"],
+      "properties": {
+        "frontend": { "$ref": "#/$defs/stringSet" },
+        "backend": { "$ref": "#/$defs/stringSet" },
+        "databases": { "$ref": "#/$defs/stringSet" }
+      }
+    },
+    "publicApi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exports", "http"],
+      "properties": {
+        "exports": { "$ref": "#/$defs/stringSet" },
+        "http": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["method", "path"],
+            "properties": {
+              "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+              "path": { "type": "string", "pattern": "^/" }
+            }
+          }
+        }
+      }
+    },
+    "environmentVariables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "required", "secret", "description"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" },
+          "required": { "type": "boolean" },
+          "secret": { "type": "boolean" },
+          "description": { "type": "string", "minLength": 5 }
+        }
+      }
+    },
+    "permissions": { "$ref": "#/$defs/stringSet" },
+    "events": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["published", "consumed"],
+      "properties": {
+        "published": { "$ref": "#/$defs/stringSet" },
+        "consumed": { "$ref": "#/$defs/stringSet" }
+      }
+    },
+    "migrations": { "$ref": "#/$defs/stringSet" },
+    "tests": { "$ref": "#/$defs/stringSet" },
+    "documentation": { "type": "string", "pattern": "^\\./" }
+  },
+  "$defs": {
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
