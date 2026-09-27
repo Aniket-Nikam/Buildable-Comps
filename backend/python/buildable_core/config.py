@@ -1,5 +1,6 @@
 from functools import lru_cache
 from typing import Literal, Self
+from urllib.parse import urlparse
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -50,6 +51,8 @@ class Settings(BaseSettings):
                 raise ValueError("Production requires PostgreSQL")
             if self.rate_limit_backend != "redis" or not self.redis_url:
                 raise ValueError("Production requires Redis-backed rate limiting")
+            if urlparse(self.redis_url).password is None:
+                raise ValueError("Production Redis requires authentication")
             if not self.require_verified_email:
                 raise ValueError("REQUIRE_VERIFIED_EMAIL must be true in production")
             if self.identity_notifier_backend == "memory":
